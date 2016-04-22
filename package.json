@@ -4,6 +4,7 @@
   "description": "assignment of joost ",
   "main": "index.js",
   "dependencies": {
+    "jquery": "^2.2.3",
     "lodash": "^4.11.1",
     "url": "^0.11.0"
   },

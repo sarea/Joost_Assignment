@@ -21,26 +21,49 @@ function send404(response) {
   response.end();
 }
 
-function sendName(response, name) {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  response.write('Hello ' + name);
-  response.end();
-}
+// function sendName(response, name) {
+//   response.writeHead(200, {"Content-Type": "text/html"});
+//   response.write('Hello ' + name);
+//   response.end();
+// }
 
 function parsed(parse, response) {
-  parse = parse.toLocaleLowerCase()
-  if(parse.indexOf('name=') != -1){
-    var name = parse.slice(parse.indexOf("name=")+5);
-    name = name.slice(0, name.indexOf("&"));
-    sendName(response, name);
+  if(parse !== null) {
+    parse = parse.toLocaleLowerCase()
+    if(parse.indexOf('name=') != -1) {
+      var name = parse.slice(parse.indexOf("name=")+5);
+      if(name.indexOf("&") !== -1){
+        name = name.slice(0, name.indexOf("&"));
+      }
+      var newData = newDataOfIndexHTML(name);
+      writeFile(newData);
+      sendFile('./index.html', 'text/html', response);
+    }else {
+      send404(response);
+    }
   }else {
     send404(response);
   }
 }
 
+function newDataOfIndexHTML(name) {
+  return '<!doctype html><html><head><title>'+name
+  +'</title><link rel="stylesheet" href="/style.css" type="text/css" /></head><body>hello '+ name
+  +'<br><a href="/page.html" type="text/html">page</a><script src="https://code.jquery.com/jquery-2.2.0.min.js"></script></body></html>';
+}
+
+function writeFile(data) {
+  fs.writeFile('index.html', data, function (err) {
+  if (err) return console.log(err);
+  console.log('data changed!!');
+  });
+}
+
 function requestHandler (request, response) {
   var parse = url.parse(request.url);
   if(request.url == '/'){
+    var newData = newDataOfIndexHTML("HOME");
+    writeFile(newData);
     sendFile('./index.html', 'text/html', response);
   }else if(request.url == '/style.css'){
     sendFile('./style.css', 'text/css', response);
